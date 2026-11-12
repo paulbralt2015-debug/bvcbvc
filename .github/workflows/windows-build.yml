@@ -1,0 +1,31 @@
+name: Build Windows x64
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore A52CinemaPlayer/A52CinemaPlayer.csproj
+
+      - name: Publish
+        run: dotnet publish A52CinemaPlayer/A52CinemaPlayer.csproj -c Release -r win-x64 --self-contained false -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: A52CinemaPlayer-win-x64
+          path: publish/
+          if-no-files-found: error
